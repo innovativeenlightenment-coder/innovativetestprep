@@ -382,7 +382,7 @@ export default function Footer() {
 
       {/* Middle Section */}
       <div className="bg-gradient-to-r from-green-400 via-green-200 to-green-300 py-10">
-        <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-8 px-6 md:px-20">
+        <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-8 px-3 md:px-20">
           {/* Contact Info */}
           <div>
             <h4 className="text-green-800 font-semibold mb-4">Contact Info</h4>
