@@ -136,7 +136,7 @@ export default function LocationPage() {
 
 
 
-            <div className="bg-gradient-to-br from-pink-300 to-red-200 rounded-2xl shadow-lg p-6 text-center">
+            <div className="bg-gradient-to-br from-pink-300 to-red-400 rounded-2xl shadow-lg p-6 text-center">
               <h3 className="text-xl font-semibold text-teal-800">
                 Gazala Ameen
               </h3>
