@@ -386,7 +386,7 @@ export default function Footer() {
           {/* Contact Info */}
           <div>
             <h4 className="text-green-800 font-semibold mb-4">Contact Info</h4>
-            <p className="font-normal text-sm text-gray-800">support@innovativetestprep.vercel.app</p>
+            <p className="font-normal text-sm text-gray-800">getus@innovativetestprep.vercel.app</p>
             <p className="font-normal text-sm text-gray-800">+91 9335092385</p>
             <p className="font-normal text-sm text-gray-800">www.innovativetestprep.vercel.app</p>
           </div>
