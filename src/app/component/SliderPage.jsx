@@ -1053,7 +1053,7 @@ const slides = [
     ,
     btnText: "Enroll in our JEE Test Series today and unlock your path to IITs and NITs! and More",
     // btnLink: "/mountains",
-    img: "/images/slider/JEE.jpg",
+    img: "/images/Slider/JEE.jpg",
   },
   {
     id: 2,
@@ -1062,7 +1062,7 @@ const slides = [
     ,
     btnText: "Join our CET Test Series and secure your seat in top colleges!",
     // btnLink: "/beach",
-    img: "/images/slider/CET.jpg",
+    img: "/images/Slider/CET.jpg",
   },
   {
     id: 3,
@@ -1071,7 +1071,7 @@ const slides = [
     ,
     btnText: "Join our Foundation Test Series today for a brighter tomorrow!",
     btnLink: "/cities",
-    img: "/images/slider/Fondation.jpg",
+    img: "/images/Slider/Fondation.jpg",
   },
   {
     id: 4,
@@ -1081,7 +1081,7 @@ The NEET Test Series is crafted by subject experts to give you real exam experie
     ,
     btnText: "Join our NEET Test Series and take your first step towards your dream medical career!",
     btnLink: "/cities",
-    img: "/images/slider/NEET.jpg",
+    img: "/images/Slider/NEET.jpg",
   },
 ];
 
