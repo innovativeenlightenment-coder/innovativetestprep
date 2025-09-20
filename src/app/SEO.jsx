@@ -7,7 +7,7 @@ export default function SEO() {
     <Head>
       {/* Title & Description */}
       <title>
-        Innovative Education Test Series App | JEE NEET CET Mock Tests Miraj
+        Innovative Education Test Series App | FOUNDATION JEE NEET CET Mock Tests Miraj
       </title>
       <meta
         name="description"
@@ -17,11 +17,11 @@ export default function SEO() {
       {/* Keywords */}
       <meta
         name="keywords"
-        content="test series app, online mock tests, JEE NEET CET preparation, Innovative Education Miraj, Shayanali son of Shoukatali, foundation 8th 9th 10th test, best coaching Miraj"
+        content="test series app, online mock tests,FOUNDATION JEE NEET CET preparation, Innovative Education Miraj, Shayanali son of Shoukatali, foundation 8th 9th 10th test, best coaching Miraj just at MKCL Learning Center"
       />
 
       {/* Canonical */}
-      <link rel="canonical" href="https://www.testseriesapp.com/" />
+      <link rel="canonical" href="https://innovativetestprep.vercel.app//" />
 
       {/* Open Graph (Facebook/LinkedIn) */}
       <meta property="og:title" content="Innovative Education Test Series App" />
@@ -30,17 +30,17 @@ export default function SEO() {
         content="Best JEE, NEET & CET Test Series App in Miraj by Shayanali, son of Shoukatali."
       />
       <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://www.testseriesapp.com/" />
-      <meta property="og:image" content="https://www.testseriesapp.com/og-image.jpg" />
+      <meta property="og:url" content="https://innovativetestprep.vercel.app//" />
+      <meta property="og:image" content="https://innovativetestprep.vercel.app//og-image.jpg" />
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="Innovative Education Test Series App" />
       <meta
         name="twitter:description"
-        content="Practice JEE, NEET & CET Mock Tests. Call +91 9421567466."
+        content="Practice FOUNDATION, JEE, NEET & CET Mock Tests. Call +91 9421567466."
       />
-      <meta name="twitter:image" content="https://www.testseriesapp.com/og-image.jpg" />
+      <meta name="twitter:image" content="https://innovativetestprep.vercel.app//og-image.jpg" />
 
       {/* Local SEO Schema */}
       <script
@@ -50,8 +50,8 @@ export default function SEO() {
             "@context": "https://schema.org",
             "@type": "EducationalOrganization",
             name: "Innovative Education Test Series",
-            url: "https://www.testseriesapp.com",
-            logo: "https://www.testseriesapp.com/logo.png",
+            url: "https://innovativetestprep.vercel.app/",
+            logo: "https://innovativetestprep.vercel.app/logo.png",
             contactPoint: {
               "@type": "ContactPoint",
               telephone: "+91 9421567466",

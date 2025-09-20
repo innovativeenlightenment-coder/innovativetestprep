@@ -1086,7 +1086,8 @@ The NEET Test Series is crafted by subject experts to give you real exam experie
 ];
 
 export default function SliderPage() {
-  const videoIds = ["s97oMJe5pYY", "8mxDiefPrcc"];
+ // const videoIds = ["s97oMJe5pYY"];
+   const videoIds = ["s97oMJe5pYY", "8mxDiefPrcc"];
   const playerRefs = useRef({});
   const [isMuted, setIsMuted] = useState({});
 
@@ -1168,7 +1169,7 @@ export default function SliderPage() {
                 draggable={false}
               />
             <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6">
-             <h2 className="text-white opacity-80 text-2xl md:text-4xl font-bold mb-4">
+             <h2 className="text-white opacity-80 text-2xl md:text-4xl font-bold mb-4 sm:text-sm">
                {title}
                 </h2>
                 <p className="text-white max-w-xl mb-6">{desc}</p>
@@ -1190,7 +1191,7 @@ export default function SliderPage() {
           <div
             key={videoId}
             className="relative rounded-lg shadow-lg overflow-hidden"
-            style={{ width: "220px", height: "125px" }}
+            style={{ width: "170px", height: "100px" }}
           >
             <div id={`yt-${videoId}`} className="w-full h-full" />
             <button

@@ -381,12 +381,12 @@ export default function Footer() {
       </div>
 
       {/* Middle Section */}
-      <div className="bg-gradient-to-r from-green-400 via-green-200 to-green-300 py-10">
-        <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-8 px-3 md:px-20">
+      <div className="bg-gradient-to-r from-green-600 via-green-300 to-green-500 py-10">
+        <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6 px-3 md:px-20">
           {/* Contact Info */}
           <div>
             <h4 className="text-green-800 font-semibold mb-4">Contact Info</h4>
-            <p className="font-normal text-sm text-gray-800">getus@innovativetestprep.vercel.app</p>
+            <p className="font-normal text-sm text-gray-800">innovativetestprep@hotmail.com</p>
             <p className="font-normal text-sm text-gray-800">+91 9335092385</p>
             <p className="font-normal text-sm text-gray-800">www.innovativetestprep.vercel.app</p>
           </div>
@@ -410,7 +410,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links
           <div>
             <h4 className="text-green-800 font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm font-normal">
@@ -419,7 +419,7 @@ export default function Footer() {
               <li><Link href="#">Terms & Conditions</Link></li>
               <li><Link href="#">FAQ</Link></li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Test Categories */}
           <div>

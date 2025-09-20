@@ -9,46 +9,50 @@ const plans = [
         id: 1,
         tier: "Basic Plan",
         title: "Starter",
-        price: "₹ 699/-",
-        subject: "subject",
+        price: "₹ 399/-*",
+        subject: "per subject",
         features: [
-            "Chapter-wise online test series 2 Test per Chapter",
-            "Instant score & solutions",
-            "Detailed progress reports",
-            "12-month access",
-            "Notes will be provided in PDF"
+            "2 Test per Chapter on all subject",
+            "Instant score of test & solution of each question",
+            "Detailed progress report avalible in dashbord of student",
+            "Notes will be provided in PDF of your referance"
         ],
     },
     {
         id: 2,
-        tier: "Premium Plan",
-        title: "Achiever 🚀",
-        price: "₹ 1299/-",
-        subject: "subject",
+        tier: "Pro Plan",
+        title: "Champion ✨",
+        price: "₹ 999/-*",
+        subject: "per subject",
+        subject: "per subject",
         popular: true,
         features: [
-            "Unlimited Chapter-wise online test",
-            "Full syllabus mock tests",
-            "Notes will be provided in PDF, Video & audio content",
+            "Unlimited online tests on all subject",
+            "Instant score of test & solution of each question",
+            "Detailed progress report avalible in dashbord of student",
+            "Notes will be provided in PDF of your referance",
             "12 months validity",
             "Detailed progress reports",
-            "Doubt Session after Test",
+            "Doubt Session after Tests",
+            "Fianl 3 Full syllabus mock tests",
         ],
     },
     {
         id: 3,
-        tier: "Pro Plan",
-        title: "Champion ✨",
-        price: "₹ 2199/-",
-        subject: "subject",
+        tier: "Premium Plan",
+        title: "Achiever 🚀",
+        price: "₹ 1499/-*",
+        subject: "per subject",
         features: [
-            "Unlimited online test access",
-            "Adaptive difficulty levels",
-            "Notes will be provided in PDF,Video & audio content",
-            "Detailed progress reports",
-            "Lifetime access to resources",
-            "Doubt Session after Test and 3 months expert mentorship",
-        ],
+            "Unlimited online tests on all subject",
+            "Full syllabus mock tests on all subjects",
+            "Adaptive difficulty levels to improve your performace",
+            "Instant score of test & solution of each question",
+            "Detailed progress report avalible in dashbord of student",
+            "Notes will be provided in PDF of your referance",
+            "Lifetime access to resources so you can connect to our mentors",
+            "Doubt Session and mentorship ater Tests 3 test of each subject",
+        ]
     },
 ];
 
@@ -104,7 +108,7 @@ export default function SubscriptionPage() {
 
                                 {/* Price */}
                                 <div className="text-center mt-6">
-                                    <span className="text-3xl md:text-6x font-black text-indigo-600 tracking-wide">
+                                    <span className="text-3xl md:text-6x font-black text-indigo-900 tracking-wide">
                                         {p.price}
                                     </span>
                                     <span className="text-sm text-gray-500 ml-1 align-top">
@@ -117,7 +121,7 @@ export default function SubscriptionPage() {
                                     {p.features.map((f, idx) => (
                                         <li
                                             key={idx}
-                                            className="flex items-start gap-3 text-gray-700 text-base"
+                                            className="flex items-start gap-1 text-sm text-gray-700 text-base"
                                         >
                                             <svg
                                                 className="w-5 h-5 mt-1 text-orange-500 flex-shrink-0"
@@ -139,14 +143,14 @@ export default function SubscriptionPage() {
                             </div>
 
                             {/* CTA */}
-                            {/* <div className="mt-8">
+                            <div className="mt-8">
                                 <button
-                                    className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:opacity-90 text-white font-semibold py-4 rounded-full shadow-lg transition transform hover:scale-105 text-lg"
+                                    className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:opacity-90 text-white text-3xl font-semibold py-4 rounded-full shadow-lg transition transform hover:scale-105 text-lg"
                                     aria-label={`Read more about ${p.title}`}
                                 >
                                     Join Now →
                                 </button>
-                            </div> */}
+                            </div>
                         </div>
                     ))}
                 </div>

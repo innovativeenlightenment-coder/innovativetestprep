@@ -1,4 +1,5 @@
 "use client";
+import Link from 'next/link'
 import "@/app/globals.css";
 import React from 'react'
 import { useState } from "react";
@@ -75,6 +76,7 @@ const HeaderPage = () => {
               <span className="absolute left-1/2 -translate-x-1/2 top-10 px-2 py-1 text-xs font-medium text-white bg-black rounded opacity-0 group-hover:opacity-100 transition w-[80]">
                 Login Here!
               </span>
+              {/* <Link href="/dashboard">Dashboard</Link> */}
             </div>
 
             {/* Location with tooltip */}

@@ -10,7 +10,7 @@ export default function LocationPage() {
         <iframe
           className="w-full h-full border-0"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3819.0885121450965!2d74.64146927419635!3d16.821964518849473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc1230773dff2e9%3A0xa71a5edeb52b2e4f!2sInnovative%20Computer!5e0!3m2!1sen!2sin!4v1758013763870!5m2!1sen!2sin">
-        
+
         </iframe>
       </div>
 
@@ -33,37 +33,40 @@ export default function LocationPage() {
                 Innovative Education HQ, Pune, Maharashtra, India
               </span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 font-bold">
               <FaPhoneAlt className="text-green-500 text-xl" />
               <span className="text-gray-700">+91 9421567466</span>
+
+              {/* <FaPhoneAlt className="text-green-500 text-xl" /> */}
+              <span className="text-gray-700">+91 9881893510</span>
             </div>
             <div className="flex items-center space-x-4">
               <FaEnvelope className="text-blue-500 text-xl" />
               <span className="text-gray-700">
-                support.innovative@gmail.com
+                innovativetestprep@hotmail.com
               </span>
             </div>
           </div>
         </div>
 
         {/* Right - Contact Form */}
-        <div className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-2xl shadow-xl p-8">
+        <div className="bg-gradient-to-r from-indigo-700 to-blue-600 text-white rounded-2xl shadow-xl p-8">
           <h2 className="text-3xl font-bold mb-6">Get In Touch</h2>
           <form className="space-y-4">
             <input
               type="text"
               placeholder="Your Name"
-              className="w-full p-3 rounded-lg text-gray-800"
+              className="w-full p-3 rounded-lg text-gray-200"
             />
             <input
               type="email"
               placeholder="Your Email"
-              className="w-full p-3 rounded-lg text-gray-800"
+              className="w-full p-3 rounded-lg text-gray-200"
             />
             <textarea
               placeholder="Your Message"
               rows="4"
-              className="w-full p-3 rounded-lg text-gray-800"
+              className="w-full p-3 rounded-lg text-gray-200"
             ></textarea>
             <button
               type="submit"
@@ -87,7 +90,7 @@ export default function LocationPage() {
 
             <div className="bg-gradient-to-br from-red-100 to-pink-200 rounded-2xl shadow-lg p-6 text-center">
               <h3 className="text-xl font-semibold text-red-800">
-                Abdulkarim  S.
+                Abdulkarim
               </h3>
               <p className="text-gray-600">Chairman and CEO</p>
               <p className="mt-2 text-sm text-gray-700">
@@ -116,7 +119,7 @@ export default function LocationPage() {
 
             <div className="bg-gradient-to-br from-yellow-100 to-orange-200 rounded-2xl shadow-lg p-6 text-center">
               <h3 className="text-xl font-semibold text-yellow-800">
-                Masood Ahmad
+                Masood Ahmed
               </h3>
               <p className="text-gray-600">Teacher Head</p>
               <p className="mt-2 text-sm text-gray-700">
