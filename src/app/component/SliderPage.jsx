@@ -1168,14 +1168,14 @@ export default function SliderPage() {
                 className="w-full h-full object-cover"
                 draggable={false}
               />
-              <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6 mt-20">
+              <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6 mt-18">
                 <h2 className="text-white opacity-80 text-2xl md:text-4xl font-bold mb-4 sm:text-sm">
                   {title}
                 </h2>
                 <p className="text-white max-w-xl mb-6">{desc}</p>
                 <a
                   href={btnLink || "#"}
-                  className="inline-block bg-gray-400 opacity-80 text-blue-900 hover:bg-blue-300 text-blue-200 font-semibold px-6 py-3 rounded-lg transition"
+                  className="inline-block bg-gray-400 opacity-80 text-blue-900 hover:bg-blue-300 text-blue-200 font-semibold px-6 py-2 rounded-lg transition"
                 >
                   {btnText}
                 </a>
