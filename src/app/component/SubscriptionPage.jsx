@@ -20,7 +20,6 @@ const plans = [
 
             "Notes in PDF format for your reference and study",
 
-            "Unlimited online tests on all subjects",
         ],
     },
     {
