@@ -12,10 +12,15 @@ const plans = [
         price: "₹ 399/-*",
         subject: "per subject",
         features: [
-            "2 Test per Chapter on all subject",
-            "Instant score of test & solution of each question",
-            "Detailed progress report avalible in dashbord of student",
-            "Notes will be provided in PDF of your referance"
+            "Two tests on each chapter of every subject",
+
+            "Instant score and detailed solutions for each test",
+
+            "Detailed progress reports available in the student dashboard",
+
+            "Notes in PDF format for your reference and study",
+
+            "Unlimited online tests on all subjects",
         ],
     },
     {
@@ -28,13 +33,13 @@ const plans = [
         popular: true,
         features: [
             "Unlimited online tests on all subject",
-            "Instant score of test & solution of each question",
-            "Detailed progress report avalible in dashbord of student",
-            "Notes will be provided in PDF of your referance",
-            "12 months validity",
+            "Instant score of test & solution",
+            "Smart Dashboard track your growth in detail",
+            "Notes in PDF for your referance and study",
             "Detailed progress reports",
             "Doubt Session after Tests",
-            "Fianl 3 Full syllabus mock tests",
+            "Fianal three Full syllabus mock tests",
+            "12 months validity",
         ],
     },
     {
@@ -44,14 +49,14 @@ const plans = [
         price: "₹ 1499/-*",
         subject: "per subject",
         features: [
-            "Unlimited online tests on all subject",
-            "Full syllabus mock tests on all subjects",
-            "Adaptive difficulty levels to improve your performace",
-            "Instant score of test & solution of each question",
-            "Detailed progress report avalible in dashbord of student",
-            "Notes will be provided in PDF of your referance",
-            "Lifetime access to resources so you can connect to our mentors",
-            "Doubt Session and mentorship ater Tests 3 test of each subject",
+            "Unlimited online tests for practice",
+            "Full syllabus mock tests per subjects",
+            "Instant score of test & solution",
+            "Adaptive difficulty levels to challenges that match your level",
+            "Smart Dashboard track your growth in detail",
+            "Notes in PDF for your referanceand study",
+            "Lifetime access to resources",
+            "Doubt Session and mentorship ater 3 test",
         ]
     },
 ];
