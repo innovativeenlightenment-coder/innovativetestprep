@@ -457,7 +457,7 @@ export default function Footer() {
         {/* <p className="text-lg">support@testseriesapp.com</p> */}
         {/* </div>  */}
         <a
-          href="/contact"
+          href=""
           className="mt-3 inline-block bg-yellow-400 text-blue-900 font-bold text-center py-2 px-4 rounded-md hover:bg-yellow-300 hover:scale-105 transition-transform"
         >
           Join Us! Today
@@ -466,15 +466,15 @@ export default function Footer() {
 
       {/* Bottom Section */}
       <div className="bg-gray-900 text-gray-400 py-6 px-6 md:px-20 flex flex-col md:flex-row items-center justify-between">
-        <p className="text-sm font-normal">
+        <p className="text-sm w-full text-center font-normal">
           © 2025 Innovative Education, Miraj Test Series App. All Rights Reserved.
         </p>
-        <div className="flex space-x-4 mt-3 md:mt-0 text-lg">
+        {/* <div className="flex space-x-4 mt-3 md:mt-0 text-lg">
           <FaFacebook className="cursor-pointer hover:text-blue-500" />
           <FaInstagram className="cursor-pointer hover:text-pink-500" />
           <FaLinkedin className="cursor-pointer hover:text-blue-400" />
           <FaYoutube className="cursor-pointer hover:text-red-500" />
-        </div>
+        </div> */}
       </div>
     </footer>
   );

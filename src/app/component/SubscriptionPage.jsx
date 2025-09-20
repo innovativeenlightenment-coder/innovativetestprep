@@ -16,8 +16,7 @@ const plans = [
 
             "Instant score and detailed solutions for each test",
 
-            "Detailed progress reports available in the student dashboard",
-
+            "Smart Dashboard track your growth in detail",
             "Notes in PDF format for your reference and study",
 
         ],

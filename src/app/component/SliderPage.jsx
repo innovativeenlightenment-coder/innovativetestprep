@@ -963,7 +963,7 @@
 
 // export default function SliderPage() {
 
-  
+
 //   return (
 //     <div className="w-full py-0 relative ">
 //       {/* Swiper Slider */}
@@ -1049,7 +1049,7 @@ const slides = [
   {
     id: 1,
     title: "Crack JEE with Confidence!",
-    desc: <span>Our JEE Test Series empowers aspirants with the right practice and strategies to score high.It is designed by IITians and experienced faculty, includes concept-based tests, full-length mocks and time-management training. Every test helps you adapt JEE’s pattern ensuring you’re exam-ready and reduce your get rid of pressure.</span>
+    desc: <span>Our JEE Test Series empowers aspirants with the right practice and strategies to score high.It is designed by IITians and experienced faculty, includes concept-based tests, full-length mocks and time-management training.</span>// Every test helps you adapt JEE’s pattern ensuring you’re exam-ready and reduce your get rid of pressure.</span>
     ,
     btnText: "Enroll in our JEE Test Series today and unlock your path to IITs and NITs! and More",
     // btnLink: "/mountains",
@@ -1058,7 +1058,7 @@ const slides = [
   {
     id: 2,
     title: "Score High in CET with Expert Guidance!",
-    desc: <span>Success in competitive exams begins with the right foundation. Our Foundation Test Series is specially designed for students of Classes 8, 9, and 10 to strengthen concepts in Maths, Science, and Reasoning. With regular practice tests, detailed analysis, and expert guidance, we ensure that every student gains confidence and clarity.</span>
+    desc: <span>Success in competitive exams begins with the right foundation. Our Foundation Test Series is specially designed for students of Classes 8, 9, and 10 to strengthen concepts in Maths, Science, and Reasoning.</span>// With regular practice tests, detailed analysis, and expert guidance, we ensure that every student gains confidence and clarity.</span>
     ,
     btnText: "Join our CET Test Series and secure your seat in top colleges!",
     // btnLink: "/beach",
@@ -1067,7 +1067,7 @@ const slides = [
   {
     id: 3,
     title: "Build a Strong Base, Secure Your Future!",
-    desc: <span>Success in competitive exams begins with the right foundation. Our Foundation Test Series is specially designed for students of Classes 8, 9, and 10 to strengthen concepts in Maths, Science, and Reasoning. With regular practice tests, detailed analysis, and expert guidance, we ensure that every student gains confidence and clarity.</span>
+    desc: <span>Success in competitive exams begins with the right foundation. Our Foundation Test Series is specially designed for students of Classes 8, 9, and 10 to strengthen concepts in Maths, Science, and Reasoning.</span> //With regular practice tests, detailed analysis, and expert guidance, we ensure that every student gains confidence and clarity.</span>
     ,
     btnText: "Join our Foundation Test Series today for a brighter tomorrow!",
     btnLink: "/cities",
@@ -1077,7 +1077,7 @@ const slides = [
     id: 4,
     title: "Your Journey Becoming a Doctor Starts Here!",
     desc: <span>Your Journey Becoming a Doctor Starts Here!
-The NEET Test Series is crafted by subject experts to give you real exam experience. With chapter-wise tests, mock exams, and detailed solutions, we prepare you to handle every question with ease. Our analysis reports help identify strengths and weaknesses, ensuring continuous improvement.</span>
+      The NEET Test Series is crafted by subject experts to give you real exam experience. With chapter-wise tests, mock exams, and detailed solutions, we prepare you to handle every question with ease.</span>// Our analysis reports help identify strengths and weaknesses, ensuring continuous improvement.</span>
     ,
     btnText: "Join our NEET Test Series and take your first step towards your dream medical career!",
     btnLink: "/cities",
@@ -1086,8 +1086,8 @@ The NEET Test Series is crafted by subject experts to give you real exam experie
 ];
 
 export default function SliderPage() {
- // const videoIds = ["s97oMJe5pYY"];
-   const videoIds = ["s97oMJe5pYY", "8mxDiefPrcc"];
+  // const videoIds = ["s97oMJe5pYY"];
+  const videoIds = ["s97oMJe5pYY", "8mxDiefPrcc"];
   const playerRefs = useRef({});
   const [isMuted, setIsMuted] = useState({});
 
@@ -1168,9 +1168,9 @@ export default function SliderPage() {
                 className="w-full h-full object-cover"
                 draggable={false}
               />
-            <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6">
-             <h2 className="text-white opacity-80 text-2xl md:text-4xl font-bold mb-4 sm:text-sm">
-               {title}
+              <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6 mt-20">
+                <h2 className="text-white opacity-80 text-2xl md:text-4xl font-bold mb-4 sm:text-sm">
+                  {title}
                 </h2>
                 <p className="text-white max-w-xl mb-6">{desc}</p>
                 <a

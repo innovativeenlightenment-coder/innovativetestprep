@@ -861,15 +861,21 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   PieChart,
   Pie,
   Cell,
-  Tooltip,
+  Tooltip as ReTooltip,
+  Legend as ReLegend,
   ResponsiveContainer,
-  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
 } from "recharts";
+
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -879,265 +885,611 @@ import {
   People as PeopleIcon,
   MonetizationOn as MonetizationOnIcon,
 } from "@mui/icons-material";
-import Image from "next/image";
 
-// Chart Colors
-const COLORS = ["#22c55e", "#f87171", "#3b82f6", "#f59e0b", "#a855f7"];
+/* --------------------------
+   Constants & helper utils
+   -------------------------- */
+const COURSES = ["Foundation", "NEET", "JEE", "CET"];
+const SUBJECTS = ["Maths", "Physics", "Chemistry", "Biology", "English", "Science"];
+const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#a855f7"];
 
-export default function Dashboard() {
+function pad(num, width = 3) {
+  return String(num).padStart(width, "0");
+}
+
+function computePerfCategory(percentile) {
+  if (percentile >= 85) return "Top";
+  if (percentile >= 50) return "Mid";
+  return "Low";
+}
+
+/* --------------------------
+   Dummy data generators
+   -------------------------- */
+const STUDENT_COUNT = 120;
+const TEACHER_COUNT = 40;
+const TEST_COUNT = 120;
+
+const studentsSeed = Array.from({ length: STUDENT_COUNT }, (_, i) => {
+  const course = COURSES[i % COURSES.length];
+  const status = Math.random() > 0.15 ? "Subscribed" : "Unsubscribed";
+  return {
+    id: `S${pad(i + 1, 4)}`,
+    name: `Student ${i + 1}`,
+    course,
+    status,
+    joined: `2025-0${(i % 9) + 1}-${(i % 27) + 1}`,
+    img: `https://i.pravatar.cc/150?img=${(i % 70) + 1}`, // dummy avatar
+  };
+});
+
+const teachersSeed = Array.from({ length: TEACHER_COUNT }, (_, i) => {
+  const course = COURSES[i % COURSES.length];
+  return {
+    id: `T${pad(i + 1, 4)}`,
+    name: `Teacher ${i + 1}`,
+    course,
+    subject: SUBJECTS[i % SUBJECTS.length],
+    status: Math.random() > 0.3 ? "Active" : "Blocked",
+    img: `https://i.pravatar.cc/150?img=${(i % 70) + 71}`,
+  };
+});
+
+// Tests - each test record assigns a student and percentile
+const testsSeed = Array.from({ length: TEST_COUNT }, (_, i) => {
+  const course = COURSES[i % COURSES.length];
+  const subject = SUBJECTS[i % SUBJECTS.length];
+  const studentIndex = i % STUDENT_COUNT;
+  const percentile = Math.floor(Math.random() * 100); // 0-99
+  return {
+    id: `T${pad(i + 1, 4)}`,
+    name: `Mock Test ${i + 1}`,
+    course,
+    subject,
+    date: `2025-09-${(i % 28) + 1}`,
+    studentId: studentsSeed[studentIndex].id,
+    studentName: studentsSeed[studentIndex].name,
+    percentile,
+  };
+});
+
+/* --------------------------
+   Main Page Component
+   -------------------------- */
+export default function DashboardPage() {
+  // data states (we mutate statuses locally)
+  const [students, setStudents] = useState(studentsSeed);
+  const [teachers, setTeachers] = useState(teachersSeed);
+  const [tests] = useState(testsSeed);
+
+  // Tabs
   const [activeTab, setActiveTab] = useState("students");
 
-  // Chart Data
-  const subscriptionData = [
-    { name: "Subscribed", value: 120 },
-    { name: "Unsubscribed", value: 40 },
-  ];
+  // Students tab controls
+  const [studentSearch, setStudentSearch] = useState("");
+  const [studentCourse, setStudentCourse] = useState("All");
+  const [studentPage, setStudentPage] = useState(1);
+  const STUDENTS_PER_PAGE = 25;
 
-  const admissionData = [
-    { name: "Foundation", value: 60 },
-    { name: "NEET", value: 40 },
-    { name: "JEE", value: 30 },
-    { name: "CET", value: 20 },
-  ];
+  // Teachers tab controls
+  const [teacherSearch, setTeacherSearch] = useState("");
+  const [teacherCourse, setTeacherCourse] = useState("All");
+  const [teacherPage, setTeacherPage] = useState(1);
+  const TEACHERS_PER_PAGE = 25;
 
-  const revenueData = [
+  // Tests tab controls
+  const [testSearch, setTestSearch] = useState("");
+  const [testCourse, setTestCourse] = useState("All");
+  const [testSubject, setTestSubject] = useState("All");
+  const [testPage, setTestPage] = useState(1);
+  const TESTS_PER_PAGE = 25;
+
+  /* --------------------------
+     Derived metrics for top cards
+     -------------------------- */
+  const stats = useMemo(() => {
+    const byCourse = {};
+    COURSES.forEach((c) => {
+      const s = students.filter((st) => st.course === c);
+      byCourse[c] = {
+        total: s.length,
+        subscribed: s.filter((x) => x.status === "Subscribed").length,
+        unsubscribed: s.filter((x) => x.status === "Unsubscribed").length,
+      };
+    });
+    const revenueTotal = 150000; // as requested ₹1.5L
+    return { byCourse, revenueTotal };
+  }, [students]);
+
+  /* --------------------------
+     Charts data
+     -------------------------- */
+  const admissionsPie = useMemo(() => {
+    return COURSES.map((c) => ({ name: c, value: stats.byCourse[c].total }));
+  }, [stats]);
+
+  const revenuePie = [
     { name: "Foundation", value: 50000 },
     { name: "NEET", value: 50000 },
     { name: "JEE", value: 25000 },
     { name: "CET", value: 25000 },
   ];
 
-  // Dummy Data
-  const students = [
-    { id: 1, name: "Rahul Sharma", course: "Foundation", status: "Active", img: "/student1.jpg" },
-    { id: 2, name: "Sneha Patil", course: "NEET", status: "Blocked", img: "/student2.jpg" },
-    { id: 3, name: "Amit Kumar", course: "CET", status: "Active", img: "/student3.jpg" },
+  const subscriptionPie = [
+    { name: "Subscribed", value: students.filter((s) => s.status === "Subscribed").length },
+    { name: "Unsubscribed", value: students.filter((s) => s.status === "Unsubscribed").length },
   ];
 
-  const teachers = [
-    { id: 1, name: "Prof. Anjali Mehta", course: "Foundation", subject: "Mathematics", img: "/teacher1.jpg" },
-    { id: 2, name: "Dr. Rakesh Iyer", course: "NEET", subject: "Biology", img: "/teacher2.jpg" },
-    { id: 3, name: "Prof. Kiran Deshmukh", course: "JEE", subject: "Physics", img: "/teacher3.jpg" },
-  ];
+  /* --------------------------
+     Students filtering & pagination
+     -------------------------- */
+  const filteredStudents = students.filter((s) => {
+    const matchesCourse = studentCourse === "All" || s.course === studentCourse;
+    const matchesSearch =
+      studentSearch.trim() === "" ||
+      s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
+      s.id.toLowerCase().includes(studentSearch.toLowerCase());
+    return matchesCourse && matchesSearch;
+  });
 
-  const tests = [
-    { id: 1, name: "Mock Test 1", course: "NEET", subject: "Biology", date: "2025-09-01", img: "/test1.jpg" },
-    { id: 2, name: "Mock Test 2", course: "JEE", subject: "Physics", date: "2025-09-10", img: "/test2.jpg" },
-    { id: 3, name: "Mock Test 3", course: "Foundation", subject: "Mathematics", date: "2025-09-15", img: "/test3.jpg" },
-  ];
-
-  // Action Buttons
-  const ActionButtons = () => (
-    <div className="flex gap-1">
-      <button className="px-2 py-1 text-xs flex items-center gap-1 bg-red-500 text-white rounded hover:bg-red-600">
-        <BlockIcon fontSize="small" /> Block
-      </button>
-      <button className="px-2 py-1 text-xs flex items-center gap-1 bg-green-500 text-white rounded hover:bg-green-600">
-        <CheckCircleIcon fontSize="small" /> Unblock
-      </button>
-      <button className="px-2 py-1 text-xs flex items-center gap-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-        <EditIcon fontSize="small" /> Modify
-      </button>
-      <button className="px-2 py-1 text-xs flex items-center gap-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-        <DeleteIcon fontSize="small" /> Delete
-      </button>
-    </div>
+  const studentPages = Math.max(1, Math.ceil(filteredStudents.length / STUDENTS_PER_PAGE));
+  const studentPageClamped = Math.min(studentPage, studentPages);
+  const studentsPageSlice = filteredStudents.slice(
+    (studentPageClamped - 1) * STUDENTS_PER_PAGE,
+    studentPageClamped * STUDENTS_PER_PAGE
   );
 
-  return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Top Row - 5 Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
-        {[
-          { title: "Foundation", total: 60, subscribed: 45, unsubscribed: 15, icon: <SchoolIcon />, gradient: "from-indigo-500 to-purple-500" },
-          { title: "NEET", total: 40, subscribed: 30, unsubscribed: 10, icon: <SchoolIcon />, gradient: "from-pink-500 to-rose-500" },
-          { title: "JEE", total: 30, subscribed: 20, unsubscribed: 10, icon: <SchoolIcon />, gradient: "from-emerald-500 to-green-600" },
-          { title: "CET", total: 20, subscribed: 15, unsubscribed: 5, icon: <PeopleIcon />, gradient: "from-blue-500 to-cyan-500" },
-          { title: "Revenue", total: "₹1.5L", subscribed: null, unsubscribed: null, icon: <MonetizationOnIcon />, gradient: "from-yellow-400 to-orange-500" },
-        ].map((course, i) => (
-          <div key={i} className={`bg-gradient-to-r ${course.gradient} text-white shadow-xl rounded-xl p-5`}>
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-semibold">{course.title}</h2>
-              <div className="bg-white/20 p-2 rounded-full">{course.icon}</div>
-            </div>
-            <p className="text-3xl font-bold mb-3">{course.total}</p>
+  /* --------------------------
+     Teachers filtering & pagination
+     -------------------------- */
+  const filteredTeachers = teachers.filter((t) => {
+    const matchesCourse = teacherCourse === "All" || t.course === teacherCourse;
+    const matchesSearch =
+      teacherSearch.trim() === "" ||
+      t.name.toLowerCase().includes(teacherSearch.toLowerCase()) ||
+      t.id.toLowerCase().includes(teacherSearch.toLowerCase());
+    return matchesCourse && matchesSearch;
+  });
 
-            {course.subscribed !== null && (
-              <div className="text-sm flex justify-between bg-white/20 px-2 py-1 mb-1 rounded">
-                <span>✅ Subscribed</span>
-                <span>{course.subscribed}</span>
+  const teacherPages = Math.max(1, Math.ceil(filteredTeachers.length / TEACHERS_PER_PAGE));
+  const teacherPageClamped = Math.min(teacherPage, teacherPages);
+  const teachersPageSlice = filteredTeachers.slice(
+    (teacherPageClamped - 1) * TEACHERS_PER_PAGE,
+    teacherPageClamped * TEACHERS_PER_PAGE
+  );
+
+  /* --------------------------
+     Tests filtering & pagination
+     -------------------------- */
+  const filteredTests = tests.filter((r) => {
+    const matchesCourse = testCourse === "All" || r.course === testCourse;
+    const matchesSubject = testSubject === "All" || r.subject === testSubject;
+    const matchesSearch =
+      testSearch.trim() === "" ||
+      r.name.toLowerCase().includes(testSearch.toLowerCase()) ||
+      r.id.toLowerCase().includes(testSearch.toLowerCase()) ||
+      r.studentName.toLowerCase().includes(testSearch.toLowerCase());
+    return matchesCourse && matchesSubject && matchesSearch;
+  });
+
+  const testPages = Math.max(1, Math.ceil(filteredTests.length / TESTS_PER_PAGE));
+  const testPageClamped = Math.min(testPage, testPages);
+  const testsPageSlice = filteredTests.slice(
+    (testPageClamped - 1) * TESTS_PER_PAGE,
+    testPageClamped * TESTS_PER_PAGE
+  );
+
+  /* --------------------------
+     Top 10 students (filterable by course/subject)
+     -------------------------- */
+  const topStudentsList = useMemo(() => {
+    const studentsPerformance = tests
+      .filter((t) => (testCourse === "All" || t.course === testCourse) && (testSubject === "All" || t.subject === testSubject))
+      .map((t) => ({ id: t.studentId, name: t.studentName, course: t.course, subject: t.subject, percentile: t.percentile }));
+
+    // aggregate to pick highest percentile per student (simple approach)
+    const bestByStudent = {};
+    studentsPerformance.forEach((s) => {
+      if (!bestByStudent[s.id] || s.percentile > bestByStudent[s.id].percentile) {
+        bestByStudent[s.id] = s;
+      }
+    });
+    return Object.values(bestByStudent).sort((a, b) => b.percentile - a.percentile).slice(0, 10);
+  }, [tests, testCourse, testSubject]);
+
+  /* --------------------------
+     Performance counts (Top/Mid/Low)
+     -------------------------- */
+  const perfCounts = useMemo(() => {
+    const arr = filteredTests;
+    let top = 0,
+      mid = 0,
+      low = 0;
+    arr.forEach((r) => {
+      if (r.percentile >= 85) top++;
+      else if (r.percentile >= 50) mid++;
+      else low++;
+    });
+    return { top, mid, low };
+  }, [filteredTests]);
+
+  const perfBarData = [
+    { category: "Top (85+)", count: perfCounts.top },
+    { category: "Mid (50-84)", count: perfCounts.mid },
+    { category: "Low (<50)", count: perfCounts.low },
+  ];
+
+  const coursePerfPie = COURSES.map((c, idx) => ({
+    name: c,
+    value: filteredTests.filter((t) => t.course === c).length,
+    color: COLORS[idx % COLORS.length],
+  }));
+
+  /* --------------------------
+     Actions: toggle student/teacher status
+     -------------------------- */
+  function toggleStudentStatus(id) {
+    setStudents((prev) => prev.map((s) => (s.id === id ? { ...s, status: s.status === "Subscribed" ? "Unsubscribed" : "Subscribed" } : s)));
+  }
+
+  function toggleTeacherStatus(id) {
+    setTeachers((prev) => prev.map((t) => (t.id === id ? { ...t, status: t.status === "Active" ? "Blocked" : "Active" } : t)));
+  }
+
+  /* --------------------------
+     Render
+     -------------------------- */
+  return (
+    <div className="p-6 bg-gray-50 min-h-screen space-y-8">
+      {/* TOP 5 KPI CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        {/* 4 course cards */}
+        {COURSES.map((course, i) => (
+          <div key={course} className={`rounded-2xl p-4 shadow-lg text-white bg-gradient-to-tr ${i === 0 ? "from-indigo-600 to-indigo-400" : i === 1 ? "from-emerald-600 to-emerald-400" : i === 2 ? "from-yellow-500 to-amber-400" : "from-purple-600 to-violet-400"}`}>
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="text-sm font-semibold opacity-90">{course}</div>
+                <div className="text-3xl font-extrabold mt-2">{stats.byCourse[course].total}</div>
               </div>
-            )}
-            {course.unsubscribed !== null && (
-              <div className="text-sm flex justify-between bg-white/20 px-2 py-1 rounded">
-                <span>❌ Unsubscribed</span>
-                <span>{course.unsubscribed}</span>
+              <div className="text-right">
+                <div className="text-xs">Subscribed</div>
+                <div className="text-lg font-semibold text-green-100">{stats.byCourse[course].subscribed}</div>
+                <div className="text-xs mt-1">Unsubscribed</div>
+                <div className="text-lg font-semibold text-red-100">{stats.byCourse[course].unsubscribed}</div>
               </div>
-            )}
-            {course.title === "Revenue" && (
-              <div className="mt-2 text-sm space-y-1">
-                <p>📘 Foundation: ₹50,000</p>
-                <p>📗 NEET: ₹50,000</p>
-                <p>📕 JEE: ₹25,000</p>
-                <p>📙 CET: ₹25,000</p>
-              </div>
-            )}
+            </div>
           </div>
         ))}
+
+        {/* Revenue card */}
+        <div className="rounded-2xl p-4 shadow-lg bg-gradient-to-tr from-orange-500 to-rose-400 text-white">
+          <div>
+            <div className="text-sm font-semibold opacity-90">Total Revenue</div>
+            <div className="text-3xl font-extrabold mt-2">₹{(stats.revenueTotal / 1000).toFixed(1)}K</div>
+            <div className="mt-3 text-sm opacity-90">Foundation: ₹50,000 • NEET: ₹50,000</div>
+            <div className="text-sm opacity-90">JEE: ₹25,000 • CET: ₹25,000</div>
+          </div>
+        </div>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white shadow rounded-xl p-4">
+      {/* CHARTS ROW */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl shadow p-4">
           <h3 className="font-semibold mb-2">Subscriptions</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={subscriptionData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label>
-                {subscriptionData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ width: "100%", height: 240 }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie data={subscriptionPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                  {subscriptionPie.map((entry, idx) => <Cell key={idx} fill={COLORS[idx % COLORS.length]} />)}
+                </Pie>
+                <ReTooltip />
+                <ReLegend verticalAlign="bottom" height={36} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div className="bg-white shadow rounded-xl p-4">
+        <div className="bg-white rounded-2xl shadow p-4">
           <h3 className="font-semibold mb-2">Admissions by Course</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={admissionData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label>
-                {admissionData.map((_, i) => <Cell key={i} fill={COLORS[(i + 2) % COLORS.length]} />)}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ width: "100%", height: 240 }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie data={admissionsPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                  {admissionsPie.map((entry, idx) => <Cell key={idx} fill={COLORS[idx % COLORS.length]} />)}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div className="bg-white shadow rounded-xl p-4">
+        <div className="bg-white rounded-2xl shadow p-4">
           <h3 className="font-semibold mb-2">Revenue by Course</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={revenueData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label>
-                {revenueData.map((_, i) => <Cell key={i} fill={COLORS[(i + 1) % COLORS.length]} />)}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <div style={{ width: "100%", height: 240 }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie data={revenuePie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name}: ${(percent*100).toFixed(0)}%`}>
+                  {revenuePie.map((entry, idx) => <Cell key={idx} fill={COLORS[idx % COLORS.length]} />)}
+                </Pie>
+                <ReTooltip formatter={(val) => `₹${val.toLocaleString()}`} />
+                <ReLegend verticalAlign="bottom" height={36} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
-      {/* Tabs Section */}
-      <div className="bg-white shadow rounded-xl">
-        {/* Tab Headers */}
-        <div className="flex border-b">
-          {["students", "teachers", "tests"].map((tab) => (
-            <button
-              key={tab}
-              className={`flex-1 py-2 text-center font-semibold ${activeTab === tab ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700"}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.toUpperCase()}
-            </button>
-          ))}
+      {/* TABBED SECTION */}
+      <div className="bg-white rounded-2xl shadow p-0 overflow-hidden">
+        {/* tab headers */}
+        <div className="flex border-b bg-gradient-to-r from-indigo-50 to-purple-50">
+          <button className={`flex-1 py-3 font-semibold ${activeTab === "students" ? "bg-indigo-600 text-white" : "text-gray-700"}`} onClick={() => setActiveTab("students")}>Students</button>
+          <button className={`flex-1 py-3 font-semibold ${activeTab === "teachers" ? "bg-indigo-600 text-white" : "text-gray-700"}`} onClick={() => setActiveTab("teachers")}>Teachers</button>
+          <button className={`flex-1 py-3 font-semibold ${activeTab === "tests" ? "bg-indigo-600 text-white" : "text-gray-700"}`} onClick={() => setActiveTab("tests")}>Tests</button>
         </div>
 
-        {/* Tab Content */}
         <div className="p-4">
-          {/* Students Table */}
+          {/* STUDENTS TAB */}
           {activeTab === "students" && (
-            <table className="w-full border text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-2">Sr No</th>
-                  <th className="p-2">ID</th>
-                  <th className="p-2 w-1/3">Name</th>
-                  <th className="p-2">Course</th>
-                  <th className="p-2">Status</th>
-                  <th className="p-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((s, i) => (
-                  <tr key={s.id} className="border-t hover:bg-gray-50">
-                    <td className="p-2">{i + 1}</td>
-                    <td className="p-2">{s.id}</td>
-                    <td className="p-2 flex items-center gap-2">
-                      <Image src={s.img} alt={s.name} width={32} height={32} className="rounded-full border" />
-                      {s.name}
-                    </td>
-                    <td className="p-2">{s.course}</td>
-                    <td className="p-2">{s.status}</td>
-                    <td className="p-2"><ActionButtons /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="flex gap-2">
+                  <input value={studentSearch} onChange={(e) => { setStudentSearch(e.target.value); setStudentPage(1); }} placeholder="Search student or ID..." className="border rounded px-3 py-2 w-full md:w-80" />
+                  <select value={studentCourse} onChange={(e) => { setStudentCourse(e.target.value); setStudentPage(1); }} className="border rounded px-3 py-2">
+                    <option value="All">All Courses</option>
+                    {COURSES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div className="text-sm text-gray-500">Showing {filteredStudents.length} results</div>
+              </div>
+
+              <div className="overflow-auto max-h-[460px] border rounded">
+                <table className="min-w-[1000px] w-full border-collapse">
+                  <thead className="bg-gray-50 sticky top-0">
+                    <tr>
+                      <th className="p-2 border">Sr</th>
+                      <th className="p-2 border">ID</th>
+                      <th className="p-2 border">Name</th>
+                      <th className="p-2 border">Course</th>
+                      <th className="p-2 border">Joined</th>
+                      <th className="p-2 border">Status</th>
+                      <th className="p-2 border">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {studentsPageSlice.map((s, idx) => (
+                      <tr key={s.id} className="odd:bg-white even:bg-gray-50">
+                        <td className="p-2 border text-sm">{(studentPageClamped - 1) * STUDENTS_PER_PAGE + idx + 1}</td>
+                        <td className="p-2 border text-sm">{s.id}</td>
+                        <td className="p-2 border flex items-center gap-3">
+                          <img src={s.img} alt={s.name} className="w-9 h-9 rounded-full border" />
+                          <div>
+                            <div className="font-medium">{s.name}</div>
+                            <div className="text-xs text-gray-500">{s.course}</div>
+                          </div>
+                        </td>
+                        <td className="p-2 border text-sm">{s.course}</td>
+                        <td className="p-2 border text-sm">{s.joined}</td>
+                        <td className="p-2 border text-sm">
+                          <span className={`px-2 py-0.5 rounded text-xs ${s.status === "Subscribed" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{s.status}</span>
+                        </td>
+                        <td className="p-2 border">
+                          <div className="flex gap-1 justify-center">
+                            <button onClick={() => toggleStudentStatus(s.id)} className={`px-2 py-1 text-xs rounded ${s.status === "Subscribed" ? "bg-gray-700 text-white" : "bg-green-600 text-white"}`}>
+                              {s.status === "Subscribed" ? <><BlockIcon fontSize="small" /> Unsub</> : <><CheckCircleIcon fontSize="small" /> Sub</>}
+                            </button>
+                            <button className="px-2 py-1 text-xs bg-blue-500 text-white rounded flex items-center gap-1"><EditIcon fontSize="small" />Edit</button>
+                            <button className="px-2 py-1 text-xs bg-yellow-500 text-white rounded flex items-center gap-1"><DeleteIcon fontSize="small" />Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Students pagination */}
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <button onClick={() => setStudentPage((p) => Math.max(1, p - 1))} className="px-3 py-1 bg-gray-200 rounded" disabled={studentPageClamped === 1}>Prev</button>
+                <div className="px-3 py-1">Page {studentPageClamped} / {studentPages}</div>
+                <button onClick={() => setStudentPage((p) => Math.min(studentPages, p + 1))} className="px-3 py-1 bg-gray-200 rounded" disabled={studentPageClamped === studentPages}>Next</button>
+              </div>
+            </div>
           )}
 
-          {/* Teachers Table */}
+          {/* TEACHERS TAB */}
           {activeTab === "teachers" && (
-            <table className="w-full border text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-2">Sr No</th>
-                  <th className="p-2">ID</th>
-                  <th className="p-2 w-1/3">Name</th>
-                  <th className="p-2">Course</th>
-                  <th className="p-2">Subject</th>
-                  <th className="p-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teachers.map((t, i) => (
-                  <tr key={t.id} className="border-t hover:bg-gray-50">
-                    <td className="p-2">{i + 1}</td>
-                    <td className="p-2">{t.id}</td>
-                    <td className="p-2 flex items-center gap-2">
-                      <Image src={t.img} alt={t.name} width={32} height={32} className="rounded-full border" />
-                      {t.name}
-                    </td>
-                    <td className="p-2">{t.course}</td>
-                    <td className="p-2">{t.subject}</td>
-                    <td className="p-2"><ActionButtons /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="flex gap-2">
+                  <input value={teacherSearch} onChange={(e) => { setTeacherSearch(e.target.value); setTeacherPage(1); }} placeholder="Search teacher or ID..." className="border rounded px-3 py-2 w-full md:w-80" />
+                  <select value={teacherCourse} onChange={(e) => { setTeacherCourse(e.target.value); setTeacherPage(1); }} className="border rounded px-3 py-2">
+                    <option value="All">All Courses</option>
+                    {COURSES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div className="text-sm text-gray-500">Showing {filteredTeachers.length} results</div>
+              </div>
+
+              <div className="overflow-auto max-h-[460px] border rounded">
+                <table className="min-w-[1000px] w-full border-collapse">
+                  <thead className="bg-gray-50 sticky top-0">
+                    <tr>
+                      <th className="p-2 border">Sr</th>
+                      <th className="p-2 border">ID</th>
+                      <th className="p-2 border">Name</th>
+                      <th className="p-2 border">Course</th>
+                      <th className="p-2 border">Subject</th>
+                      <th className="p-2 border">Status</th>
+                      <th className="p-2 border">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teachersPageSlice.map((t, idx) => (
+                      <tr key={t.id} className="odd:bg-white even:bg-gray-50">
+                        <td className="p-2 border text-sm">{(teacherPageClamped - 1) * TEACHERS_PER_PAGE + idx + 1}</td>
+                        <td className="p-2 border text-sm">{t.id}</td>
+                        <td className="p-2 border flex items-center gap-3">
+                          <img src={t.img} alt={t.name} className="w-9 h-9 rounded-full border" />
+                          <div>
+                            <div className="font-medium">{t.name}</div>
+                            <div className="text-xs text-gray-500">{t.course}</div>
+                          </div>
+                        </td>
+                        <td className="p-2 border text-sm">{t.course}</td>
+                        <td className="p-2 border text-sm">{t.subject}</td>
+                        <td className="p-2 border text-sm">
+                          <span className={`px-2 py-0.5 rounded text-xs ${t.status === "Active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{t.status}</span>
+                        </td>
+                        <td className="p-2 border">
+                          <div className="flex gap-1 justify-center">
+                            <button onClick={() => toggleTeacherStatus(t.id)} className={`px-2 py-1 text-xs rounded ${t.status === "Active" ? "bg-gray-700 text-white" : "bg-green-600 text-white"}`}>
+                              {t.status === "Active" ? <><BlockIcon fontSize="small" /> Block</> : <><CheckCircleIcon fontSize="small" /> Unblock</>}
+                            </button>
+                            <button className="px-2 py-1 text-xs bg-blue-500 text-white rounded flex items-center gap-1"><EditIcon fontSize="small" />Edit</button>
+                            <button className="px-2 py-1 text-xs bg-yellow-500 text-white rounded flex items-center gap-1"><DeleteIcon fontSize="small" />Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <button onClick={() => setTeacherPage((p) => Math.max(1, p - 1))} className="px-3 py-1 bg-gray-200 rounded" disabled={teacherPageClamped === 1}>Prev</button>
+                <div className="px-3 py-1">Page {teacherPageClamped} / {teacherPages}</div>
+                <button onClick={() => setTeacherPage((p) => Math.min(teacherPages, p + 1))} className="px-3 py-1 bg-gray-200 rounded" disabled={teacherPageClamped === teacherPages}>Next</button>
+              </div>
+            </div>
           )}
 
-          {/* Tests Table */}
+          {/* TESTS TAB */}
           {activeTab === "tests" && (
-            <table className="w-full border text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-2">Sr No</th>
-                  <th className="p-2">ID</th>
-                  <th className="p-2 w-1/3">Test Name</th>
-                  <th className="p-2">Course</th>
-                  <th className="p-2">Subject</th>
-                  <th className="p-2">Date</th>
-                  <th className="p-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tests.map((t, i) => (
-                  <tr key={t.id} className="border-t hover:bg-gray-50">
-                    <td className="p-2">{i + 1}</td>
-                    <td className="p-2">{t.id}</td>
-                    <td className="p-2 flex items-center gap-2">
-                      <Image src={t.img} alt={t.name} width={32} height={32} className="rounded border" />
-                      {t.name}
-                    </td>
-                    <td className="p-2">{t.course}</td>
-                    <td className="p-2">{t.subject}</td>
-                    <td className="p-2">{t.date}</td>
-                    <td className="p-2"><ActionButtons /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="space-y-4">
+              {/* Filters */}
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="flex gap-2">
+                  <input value={testSearch} onChange={(e) => { setTestSearch(e.target.value); setTestPage(1); }} placeholder="Search test / student / id..." className="border rounded px-3 py-2 w-full md:w-96" />
+                  <select value={testCourse} onChange={(e) => { setTestCourse(e.target.value); setTestPage(1); }} className="border rounded px-3 py-2">
+                    <option value="All">All Courses</option>
+                    {COURSES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <select value={testSubject} onChange={(e) => { setTestSubject(e.target.value); setTestPage(1); }} className="border rounded px-3 py-2">
+                    <option value="All">All Subjects</option>
+                    {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div className="text-sm text-gray-500">Showing {filteredTests.length} results</div>
+              </div>
+
+              {/* Test Records table */}
+              <div className="overflow-auto max-h-[420px] border rounded">
+                <table className="min-w-[1100px] w-full border-collapse">
+                  <thead className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white sticky top-0">
+                    <tr>
+                      <th className="p-2 border">Sr</th>
+                      <th className="p-2 border">Test ID</th>
+                      <th className="p-2 border w-1/3">Test Name</th>
+                      <th className="p-2 border">Course</th>
+                      <th className="p-2 border">Subject</th>
+                      <th className="p-2 border">Student</th>
+                      <th className="p-2 border">Percentile</th>
+                      <th className="p-2 border">Date</th>
+                      <th className="p-2 border">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {testsPageSlice.map((r, idx) => (
+                      <tr key={r.id} className="odd:bg-white even:bg-gray-50">
+                        <td className="p-2 border text-sm">{(testPageClamped - 1) * TESTS_PER_PAGE + idx + 1}</td>
+                        <td className="p-2 border text-sm">{r.id}</td>
+                        <td className="p-2 border">{r.name}</td>
+                        <td className="p-2 border text-sm">{r.course}</td>
+                        <td className="p-2 border text-sm">{r.subject}</td>
+                        <td className="p-2 border text-sm flex items-center gap-2">
+                          <img src={students.find(s => s.id === r.studentId)?.img} alt={r.studentName} className="w-8 h-8 rounded-full border" />
+                          <div>
+                            <div className="font-medium text-sm">{r.studentName}</div>
+                            <div className="text-xs text-gray-500">{r.studentId}</div>
+                          </div>
+                        </td>
+                        <td className="p-2 border text-sm font-bold">{r.percentile}%</td>
+                        <td className="p-2 border text-sm">{r.date}</td>
+                        <td className="p-2 border">
+                          <div className="flex gap-1 justify-center">
+                            <button className="px-2 py-1 text-xs bg-blue-500 text-white rounded flex items-center gap-1"><EditIcon fontSize="small" />Edit</button>
+                            <button className="px-2 py-1 text-xs bg-red-500 text-white rounded flex items-center gap-1"><DeleteIcon fontSize="small" />Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Tests pagination */}
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <button onClick={() => setTestPage((p) => Math.max(1, p - 1))} className="px-3 py-1 bg-gray-200 rounded" disabled={testPageClamped === 1}>Prev</button>
+                <div className="px-3 py-1">Page {testPageClamped} / {testPages}</div>
+                <button onClick={() => setTestPage((p) => Math.min(testPages, p + 1))} className="px-3 py-1 bg-gray-200 rounded" disabled={testPageClamped === testPages}>Next</button>
+              </div>
+
+              {/* Bottom area: Top 10 + Performance breakdown side-by-side */}
+              <div className="grid md:grid-cols-3 gap-6 mt-4">
+                {/* Top 10 */}
+                <div className="col-span-1 md:col-span-1 bg-white rounded p-4 shadow">
+                  <h4 className="font-semibold mb-3">Top 10 (filterable)</h4>
+                  <div className="space-y-2 max-h-[300px] overflow-auto">
+                    {topStudentsList.map((s, i) => (
+                      <div key={s.id} className="flex items-center gap-3 border-b pb-2">
+                        <div className="w-10 text-sm font-medium">{i + 1}.</div>
+                        <img src={`https://i.pravatar.cc/150?img=${(i % 70) + 10}`} alt={s.name} className="w-10 h-10 rounded-full" />
+                        <div className="flex-1">
+                          <div className="font-medium">{s.name}</div>
+                          <div className="text-xs text-gray-500">{s.course} • {s.subject}</div>
+                        </div>
+                        <div className="font-bold">{s.percentile}%</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Performance Bar */}
+                <div className="col-span-2 bg-white rounded p-4 shadow">
+                  <h4 className="font-semibold mb-3">Performance Counts</h4>
+                  <div style={{ width: "100%", height: 220 }}>
+                    <ResponsiveContainer>
+                      <BarChart data={perfBarData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="category" />
+                        <YAxis allowDecimals={false} />
+                        <Tooltip />
+                        <Bar dataKey="count" fill="#6366F1" radius={[6,6,0,0]}>
+                          <Cell fill="#16A34A" />
+                          <Cell fill="#F59E0B" />
+                          <Cell fill="#EF4444" />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
+                    <div className="p-2 rounded bg-green-50 text-center">
+                      <div className="font-semibold text-green-700">{perfCounts.top}</div>
+                      <div className="text-gray-500">Top</div>
+                    </div>
+                    <div className="p-2 rounded bg-yellow-50 text-center">
+                      <div className="font-semibold text-yellow-700">{perfCounts.mid}</div>
+                      <div className="text-gray-500">Mid</div>
+                    </div>
+                    <div className="p-2 rounded bg-red-50 text-center">
+                      <div className="font-semibold text-red-700">{perfCounts.low}</div>
+                      <div className="text-gray-500">Low</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
