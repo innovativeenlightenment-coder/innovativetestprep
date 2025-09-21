@@ -36,7 +36,7 @@ const plans = [
             "Notes in PDF for your referance and study",
             "Detailed progress reports",
             "Doubt Session after every 3 Tests",
-            "Fianal three Full syllabus mock tests",
+            "Final three Full syllabus mock tests",
             "12 months validity",
         ],
     },
