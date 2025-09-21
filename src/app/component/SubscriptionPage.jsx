@@ -9,7 +9,7 @@ const plans = [
         id: 1,
         tier: "Basic Plan",
         title: "Starter",
-        price: "₹ 399/-*",
+        price: "₹ 699/-*",
         subject: "per subject",
         features: [
             "Two tests on each chapter of every subject",
@@ -25,7 +25,7 @@ const plans = [
         id: 2,
         tier: "Pro Plan",
         title: "Champion ✨",
-        price: "₹ 999/-*",
+        price: "₹ 1299/-*",
         subject: "per subject",
         subject: "per subject",
         popular: true,
@@ -35,7 +35,7 @@ const plans = [
             "Smart Dashboard track your growth in detail",
             "Notes in PDF for your referance and study",
             "Detailed progress reports",
-            "Doubt Session after Tests",
+            "Doubt Session after every 3 Tests",
             "Fianal three Full syllabus mock tests",
             "12 months validity",
         ],
@@ -44,7 +44,7 @@ const plans = [
         id: 3,
         tier: "Premium Plan",
         title: "Achiever 🚀",
-        price: "₹ 1499/-*",
+        price: "₹ 2499/-*",
         subject: "per subject",
         features: [
             "Unlimited online tests for practice",
@@ -54,7 +54,7 @@ const plans = [
             "Smart Dashboard track your growth in detail",
             "Notes in PDF for your referanceand study",
             "Lifetime access to resources",
-            "Doubt Session and mentorship ater 3 test",
+            "Lifetime Doubt Session and mentorship",
         ]
     },
 ];
