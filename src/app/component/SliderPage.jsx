@@ -1168,8 +1168,8 @@ export default function SliderPage() {
                 className="w-full h-full object-cover"
                 draggable={false}
               />
-              <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6 mt-12">
-                <h2 className="text-white opacity-80 text-2xl md:text-4xl font-bold mb-4 sm:text-sm">
+              <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center p-6 ">
+                <h2 className="text-white opacity-80 text-2xl md:text-4xl font-bold mb-4 sm:text-sm mt-12">
                   {title}
                 </h2>
                 <p className="text-white max-w-xl mb-6">{desc}</p>
