@@ -366,7 +366,7 @@ export default function Footer() {
             <p className="font-medium">Instant Results & Analysis</p>
             <p className="text-sm font-normal">Check your performance instantly</p>
           </div>
-          <div className="flex flex-col items-center md:items-start">
+          <div className="flex flex-col items-center md:items-start bg-white px-2 border-4 border-solid rounded-lg p-4">
             <Image
               src="/images/innovative.png"
               alt="NEET JEE CET"
@@ -374,8 +374,8 @@ export default function Footer() {
               height={140}
               className="mb-2"
             />
-            <p className="font-medium">India’s Trusted Test Prep App</p>
-            <p className="text-sm font-normal">Trusted by 10k+ students</p>
+            <p className="font-medium text-teal-950">India’s Trusted Test Prep App</p>
+            <p className="text-sm font-normal text-teal-950">Trusted by 10k+ students</p>
           </div>
         </div>
       </div>
